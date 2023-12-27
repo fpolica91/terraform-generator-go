@@ -1,0 +1,56 @@
+definitions:
+  pkgs.Bucket:
+    properties:
+      configuration:
+        additionalProperties: true
+        type: object
+      cors_configuration:
+        additionalProperties: true
+        type: object
+      public_access_block:
+        additionalProperties: true
+        type: object
+      website_configuration:
+        additionalProperties: true
+        type: object
+    type: object
+info:
+  contact: {}
+paths:
+  /createbuckets:
+    post:
+      consumes:
+      - application/json
+      description: Create buckets based on the provided configuration
+      parameters:
+      - description: Array of Bucket Configurations
+        in: body
+        name: buckets
+        required: true
+        schema:
+          items:
+            $ref: '#/definitions/pkgs.Bucket'
+          type: array
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Buckets created successfully
+          schema:
+            type: string
+        "400":
+          description: Bad Request
+          schema:
+            type: string
+        "405":
+          description: Method Not Allowed
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            type: string
+      summary: Create S3 buckets
+      tags:
+      - buckets
+swagger: "2.0"
