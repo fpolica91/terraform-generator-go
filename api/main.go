@@ -7,10 +7,10 @@ import (
 	"generatorv/cmds"
 	_ "generatorv/docs"
 	"generatorv/pkgs"
-
 	"io"
 	"net/http"
 
+	"github.com/gorilla/handlers"
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
@@ -50,15 +50,21 @@ func handleCreateBuckets(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Call the CreateBuckets function from cmds package
-	err = cmds.CreateBuckets(data.Buckets)
+	resourcesString, err := cmds.CreateBuckets(data.Buckets)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "Buckets created successfully")
+
+	// fmt.Fprint(w, terraformString)
+	json.NewEncoder(w).Encode(struct {
+		ResourcesString string `json:"resourcesString"`
+	}{ResourcesString: resourcesString})
+
 }
+
 func handleCreateProvider(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method is not supported", http.StatusMethodNotAllowed)
@@ -72,26 +78,26 @@ func handleCreateProvider(w http.ResponseWriter, r *http.Request) {
 	var provider pkgs.Prov
 
 	err = json.Unmarshal(body, &provider)
-	fmt.Println(provider.Provider, "provider")
-	fmt.Println(provider.ProviderSource, "provider_source")
-	fmt.Println(provider.ProviderVersion, "provider_version")
 
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	err = cmds.CreateProvider(provider)
+	providerString, err := cmds.CreateProvider(provider)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	err = cmds.CreateVariables()
+	variablesString, err := cmds.CreateVariables(provider.Provider)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "Provider created successfully")
+	json.NewEncoder(w).Encode(struct {
+		ProviderString  string `json:"providerString"`
+		VariablesString string `json:"variablesString"`
+	}{ProviderString: providerString, VariablesString: variablesString})
 
 }
 
@@ -130,10 +136,24 @@ func handleCreateVirtualPrivateCloud(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	http.HandleFunc("/createprovider", handleCreateProvider)
-	http.HandleFunc("/createbuckets", handleCreateBuckets)
-	http.HandleFunc("/createvpcs", handleCreateVirtualPrivateCloud)
-	http.Handle("/swagger/", httpSwagger.WrapHandler)
+	// Create a new ServeMux
+	mux := http.NewServeMux()
+
+	// Register your handlers to the ServeMux
+	mux.HandleFunc("/createprovider", handleCreateProvider)
+	mux.HandleFunc("/createbuckets", handleCreateBuckets)
+	mux.HandleFunc("/createvpcs", handleCreateVirtualPrivateCloud)
+	mux.Handle("/swagger/", httpSwagger.WrapHandler)
+
+	// Define CORS policy
+	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
+	originsOk := handlers.AllowedOrigins([]string{"*"})
+	methodsOk := handlers.AllowedMethods([]string{"GET", "POST", "OPTIONS"})
+
+	// Apply the CORS middleware to your ServeMux
+	handler := handlers.CORS(originsOk, headersOk, methodsOk)(mux)
+
+	// Launch server with the CORS-enabled handler
 	fmt.Println("Server is running on http://localhost:8080")
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":8080", handler)
 }
