@@ -135,12 +135,49 @@ func handleCreateVirtualPrivateCloud(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Buckets created successfully")
 }
 
+func handleCreateCloudFunction(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method is not supported.", http.StatusMethodNotAllowed)
+		return
+	}
+	body, err := io.ReadAll(r.Body)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	defer r.Body.Close()
+
+	var data struct {
+		Provider string               `json:"provider"`
+		Lambdas  []pkgs.CloudFunction `json:"lambdas"`
+	}
+	err = json.Unmarshal(body, &data)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	resourceString, err := cmds.CreateCloudFunction(data.Lambdas, data.Provider)
+
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+
+	json.NewEncoder(w).Encode(struct {
+		ResourceString string `json:"resourcesString"`
+	}{ResourceString: resourceString})
+}
+
 func main() {
 	// Create a new ServeMux
 	mux := http.NewServeMux()
 
 	// Register your handlers to the ServeMux
 	mux.HandleFunc("/createprovider", handleCreateProvider)
+	mux.HandleFunc("/cloudfunction", handleCreateCloudFunction)
 	mux.HandleFunc("/createbuckets", handleCreateBuckets)
 	mux.HandleFunc("/createvpcs", handleCreateVirtualPrivateCloud)
 	mux.Handle("/swagger/", httpSwagger.WrapHandler)
