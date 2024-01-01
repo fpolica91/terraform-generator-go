@@ -2,16 +2,13 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
 	"generatorv/cmds"
 	_ "generatorv/docs"
 	"generatorv/pkgs"
-	"io"
 	"net/http"
 
-	"github.com/gorilla/handlers"
-	httpSwagger "github.com/swaggo/http-swagger"
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
 )
 
 // handleCreateBuckets godoc
@@ -26,171 +23,100 @@ import (
 // @Failure 405 {string} string "Method Not Allowed"
 // @Failure 500 {string} string "Internal Server Error"
 // @Router /createbuckets [post]
-func handleCreateBuckets(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Method is not supported.", http.StatusMethodNotAllowed)
-		return
-	}
-
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	defer r.Body.Close()
+func handleCreateBuckets(c *gin.Context) {
 
 	var data struct {
 		Buckets []pkgs.Bucket `json:"buckets"`
 	}
 
-	err = json.Unmarshal(body, &data)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+	if err := c.BindJSON(&data); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	// Call the CreateBuckets function from cmds package
 	resourcesString, err := cmds.CreateBuckets(data.Buckets)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
 
-	w.WriteHeader(http.StatusOK)
-
-	// fmt.Fprint(w, terraformString)
-	json.NewEncoder(w).Encode(struct {
-		ResourcesString string `json:"resourcesString"`
-	}{ResourcesString: resourcesString})
+	c.JSON(http.StatusOK, gin.H{"resourcesString": resourcesString})
 
 }
 
-func handleCreateProvider(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Method is not supported", http.StatusMethodNotAllowed)
-	}
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	defer r.Body.Close()
+func handleCreateProvider(c *gin.Context) {
+
 	var provider pkgs.Prov
-
-	err = json.Unmarshal(body, &provider)
-
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+	if err := c.BindJSON(&provider); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
 	providerString, err := cmds.CreateProvider(provider)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
 	variablesString, err := cmds.CreateVariables(provider.Provider)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(struct {
-		ProviderString  string `json:"providerString"`
-		VariablesString string `json:"variablesString"`
-	}{ProviderString: providerString, VariablesString: variablesString})
 
+	c.JSON(http.StatusOK, gin.H{"providerString": providerString, "variablesString": variablesString})
 }
 
-func handleCreateVirtualPrivateCloud(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Method is not supported.", http.StatusMethodNotAllowed)
-		return
-	}
-
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	defer r.Body.Close()
+func handleCreateVirtualPrivateCloud(c *gin.Context) {
 
 	var data struct {
 		Vpcs []pkgs.VPC `json:"vpcs"`
 	}
 
-	err = json.Unmarshal(body, &data)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+	if err := c.BindJSON(&data); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	resourceString, err := cmds.CreateVirtualPrivateCloud(data.Vpcs)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	}
+
+	c.JSON(http.StatusOK, gin.H{"resourceString": resourceString})
 
 	// Call the CreateBuckets function from cmds package
-	err = cmds.CreateVirtualPrivateCloud(data.Vpcs)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
 
-	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "Buckets created successfully")
 }
 
-func handleCreateCloudFunction(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Method is not supported.", http.StatusMethodNotAllowed)
-		return
-	}
-	body, err := io.ReadAll(r.Body)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	defer r.Body.Close()
-
+func handleCreateCloudFunction(c *gin.Context) {
 	var data struct {
 		Provider string               `json:"provider"`
 		Lambdas  []pkgs.CloudFunction `json:"lambdas"`
 	}
-	err = json.Unmarshal(body, &data)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+
+	if err := c.BindJSON(&data); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-
-	resourceString, err := cmds.CreateCloudFunction(data.Lambdas, data.Provider)
-
+	// ResourcesString
+	resourcesString, err := cmds.CreateCloudFunction(data.Lambdas, data.Provider)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
 
-	w.WriteHeader(http.StatusOK)
+	c.JSON(http.StatusOK, gin.H{"resourcesString": resourcesString})
 
-	json.NewEncoder(w).Encode(struct {
-		ResourceString string `json:"resourcesString"`
-	}{ResourceString: resourceString})
 }
 
 func main() {
-	// Create a new ServeMux
-	mux := http.NewServeMux()
+	router := gin.Default()
+	config := cors.DefaultConfig()
+	config.AllowAllOrigins = true
+	config.AllowMethods = []string{"GET", "POST", "OPTIONS"}
+	config.AllowHeaders = []string{"Origin", "Content-Length", "Content-Type", "Authorization"}
+	router.Use(cors.New(config))
+	router.POST("/cloudfunction", handleCreateCloudFunction)
+	router.POST("/createvpcs", handleCreateVirtualPrivateCloud)
+	router.POST("/createprovider", handleCreateProvider)
+	router.POST("/createbuckets", handleCreateBuckets)
+	router.Run(":8080") // or another port of your choice
 
-	// Register your handlers to the ServeMux
-	mux.HandleFunc("/createprovider", handleCreateProvider)
-	mux.HandleFunc("/cloudfunction", handleCreateCloudFunction)
-	mux.HandleFunc("/createbuckets", handleCreateBuckets)
-	mux.HandleFunc("/createvpcs", handleCreateVirtualPrivateCloud)
-	mux.Handle("/swagger/", httpSwagger.WrapHandler)
-
-	// Define CORS policy
-	headersOk := handlers.AllowedHeaders([]string{"X-Requested-With", "Content-Type", "Authorization"})
-	originsOk := handlers.AllowedOrigins([]string{"*"})
-	methodsOk := handlers.AllowedMethods([]string{"GET", "POST", "OPTIONS"})
-
-	// Apply the CORS middleware to your ServeMux
-	handler := handlers.CORS(originsOk, headersOk, methodsOk)(mux)
-
-	// Launch server with the CORS-enabled handler
-	fmt.Println("Server is running on http://localhost:8080")
-	http.ListenAndServe(":8080", handler)
 }
