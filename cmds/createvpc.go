@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/flosch/pongo2/v6"
+	"github.com/hashicorp/hcl/v2/hclwrite"
 )
 
 func CreateVirtualPrivateCloud(vpcs []pkgs.VPC) (string, error) {
@@ -22,6 +23,8 @@ func CreateVirtualPrivateCloud(vpcs []pkgs.VPC) (string, error) {
 		return "", err
 	}
 
-	return resourcesString.String(), nil
+	formattedString := hclwrite.Format([]byte(resourcesString.String()))
+
+	return string(formattedString), nil
 
 }

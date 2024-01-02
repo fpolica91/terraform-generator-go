@@ -8,8 +8,6 @@
   {% set bucket_name = "bucket_"|add:forloop.Counter %}
 {% endif %}
 
-  
-
   resource "aws_s3_bucket" "{{ bucket_name }}" {
     {%- for key, value in bucket.Configuration -%}
       {%- if value -%}
@@ -46,7 +44,7 @@
 
 
 
-    {% if bucket.PublicAccessBlock['acl'] %}
+    {% if bucket.PublicAccessBlock.acl %}
         resource "aws_s3_bucket_acl" "acl_bucket_{{ forloop.Counter }}" {
             depends_on = [aws_s3_bucket_ownership_controls.ownership_controls_{{ forloop.Counter }}, aws_s3_bucket_public_access_block.public_access_block_{{ forloop.Counter }}]
             bucket = aws_s3_bucket.{{bucket_name}}.id
@@ -54,10 +52,7 @@
         }
     {% endif %}
 
-
-      # WebsiteConfiguration
-
-       {% if bucket.WebsiteConfiguration['host_website'] == true %}
+       {% if bucket.WebsiteConfiguration.host_website %}
           resource "aws_s3_bucket_website_configuration" "website_config_{{ forloop.Counter }}" {
             bucket = aws_s3_bucket.{{bucket_name}}.id
             index_document  {
@@ -106,7 +101,7 @@
           }
        {%endif%}
 
-    # cors configuration
+  
     {% if bucket.CorsConfiguration %}
       resource "aws_s3_bucket_cors_configuration" "bucket_{{ loop.index }}_cors" {
         bucket = aws_s3_bucket.bucket_{{ bucket_name }}.id
@@ -127,5 +122,4 @@
         {% endfor %}
       }
     {% endif %}
-
-{% endfor %}
+{%- endfor -%}

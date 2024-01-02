@@ -24,6 +24,6 @@ func HandleCreateVirtualPrivateCloud(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
 
-	c.JSON(http.StatusOK, gin.H{"resourceString": resourceString})
+	c.JSON(http.StatusOK, gin.H{"resourcesString": resourceString})
 
 }

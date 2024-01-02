@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/flosch/pongo2/v6"
+	"github.com/hashicorp/hcl/v2/hclwrite"
 )
 
 func CreateCloudFunction(cloudfuction []pkgs.CloudFunction, provider string) (string, error) {
@@ -26,6 +27,7 @@ func CreateCloudFunction(cloudfuction []pkgs.CloudFunction, provider string) (st
 	if err != nil {
 		return "", err
 	}
-	fmt.Println(resourceString.String(), "resourceString")
-	return resourceString.String(), nil
+
+	formattedString := hclwrite.Format([]byte(resourceString.String()))
+	return string(formattedString), nil
 }

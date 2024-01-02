@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/flosch/pongo2/v6"
+	"github.com/hashicorp/hcl/v2/hclwrite"
 )
 
 func CreateVariables(cloudprovider string) (string, error) {
@@ -61,6 +62,7 @@ func CreateProvider(provider pkgs.Prov) (string, error) {
 	if err != nil {
 		return "", err
 	}
+	formatted := hclwrite.Format([]byte(terraformStr.String()))
 
-	return terraformStr.String(), nil
+	return string(formatted), nil
 }
