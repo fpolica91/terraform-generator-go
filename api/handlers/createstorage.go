@@ -26,7 +26,7 @@ func HandleCreateBuckets(c *gin.Context) {
 		Buckets []pkgs.Bucket `json:"buckets"`
 	}
 
-	if err := c.BindJSON(&data); err != nil {
+	if err := c.ShouldBindJSON(&data); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}

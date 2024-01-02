@@ -19,10 +19,9 @@
           {{ key }} = {{ value  | lower }}
         {% else %}
           {{ key }} = "{{ value }}"
-
         {%- endif -%}
       {% endif %}
-    {%-endfor-%}
+    {% endfor %}
   } 
 
   {% for subnet in vpc.SubnetConfiguration %}
@@ -96,4 +95,4 @@
     {% endif %}
   {% endfor %}
 
-{% endfor %}
+{%- endfor -%}

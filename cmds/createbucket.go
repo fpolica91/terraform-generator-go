@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/flosch/pongo2/v6"
+	"github.com/hashicorp/hcl/v2/hclwrite"
 )
 
 // func CreateBuckets(buckets []pkgs.Bucket) error {
@@ -37,5 +38,7 @@ func CreateBuckets(buckets []pkgs.Bucket) (string, error) {
 		return "", err
 	}
 
-	return terraformStr.String(), nil
+	formattedstring := hclwrite.Format([]byte(terraformStr.String()))
+
+	return string(formattedstring), nil
 }

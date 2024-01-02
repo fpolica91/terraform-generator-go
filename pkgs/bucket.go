@@ -1,10 +1,5 @@
 package pkgs
 
-type Tag struct {
-	Key   string `json:"key"`
-	Value string `json:"value"`
-}
-
 type Bucket struct {
 	Configuration        map[string]interface{} `json:"configuration"`
 	PublicAccessBlock    map[string]interface{} `json:"public_access_block"`
