@@ -21,6 +21,11 @@ import (
 // @Failure 500 {string} string "Internal Server Error"
 // @Router /createbuckets [post]
 func HandleCreateBuckets(c *gin.Context) {
+	// userId := c.GetHeader("X-User-Id")
+	// if userId == "" {
+	// 	c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+	// 	return
+	// }
 
 	var data struct {
 		Buckets []pkgs.Bucket `json:"buckets"`

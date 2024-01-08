@@ -1,6 +1,7 @@
 package cmds
 
 import (
+	"fmt"
 	"generatorv/pkgs"
 	"strings"
 
@@ -27,6 +28,7 @@ import (
 // }
 
 func CreateBuckets(buckets []pkgs.Bucket) (string, error) {
+	fmt.Println("Creating S3 buckets", buckets)
 	tpl, err := pongo2.FromFile("templates/aws/s3/createbucket.tpl")
 	if err != nil {
 		return "", err
