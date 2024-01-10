@@ -109,11 +109,9 @@
           cors_rule {
             {% for key, value in rule %}
               {% if key != 'max_age_seconds' %}
-              {{ key }} = [
-                {%- for item in value -%}
-                  "{{ item }}"{% if not forloop.Last %}, {% endif %}
-                {%- endfor -%}
-              ]
+               {%- if value  -%}
+                  {{ key }} = ["{{ value }}"]
+               {%- endif -%}
               {% else %}
               {{ key }} = {{ value  | integer}}
               {% endif %}
