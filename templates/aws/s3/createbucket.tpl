@@ -110,7 +110,14 @@
             {% for key, value in rule %}
               {% if key != 'max_age_seconds' %}
                {%- if value  -%}
-                  {{ key }} = ["{{ value }}"]
+                {%- if key == 'allowed_methods' -%}
+                  {{ key }} = [
+                    {%- for item in value -%}
+                      "{{ item }}"{% if not forloop.Last %},{% endif %}
+                    {%- endfor -%}
+                  ]
+                  {%- else -%}
+                  {{ key }} = "{{ value }}"
                {%- endif -%}
               {% else %}
               {{ key }} = {{ value  | integer}}
