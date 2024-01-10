@@ -107,22 +107,22 @@
         bucket = aws_s3_bucket.bucket_{{ bucket_name }}.id
         {% for rule in bucket.CorsConfiguration.cors_rules_list %}
           cors_rule {
-            {% for key, value in rule %}
-              {% if key != 'max_age_seconds' %}
-               {%- if value  -%}
-                {%- if key == 'allowed_methods' -%}
-                  {{ key }} = [
-                    {%- for item in value -%}
-                      "{{ item }}"{% if not forloop.Last %},{% endif %}
-                    {%- endfor -%}
-                  ]
-                  {%- else -%}
-                  {{ key }} = "{{ value }}"
-               {%- endif -%}
-              {% else %}
-              {{ key }} = {{ value  | integer}}
-              {% endif %}
-            {% endfor %}
+              {% for key, value in rule %}
+                {%- if value  -%}
+                  {% if key == 'max_age_seconds' %}
+                   {{ key }} = {{ value  | integer}}
+                  {% elif key == 'allowed_methods' %}
+                    {{ key }} = [
+                      {%- for item in value -%}
+                        "{{ item }}"
+                      {%- endfor -%}
+                    ]
+                  {% else %}
+                    {{ key }} = "{{ value }}"
+                  {% endif %}
+                {% endif %}
+              {% endfor %}
+          
           }
         {% endfor %}
       }

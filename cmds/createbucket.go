@@ -31,13 +31,15 @@ func CreateBuckets(buckets []pkgs.Bucket) (string, error) {
 	fmt.Println("Creating S3 buckets", buckets)
 	tpl, err := pongo2.FromFile("templates/aws/s3/createbucket.tpl")
 	if err != nil {
-		return "", err
+		panic(err)
+
 	}
 
 	var terraformStr strings.Builder
 	err = tpl.ExecuteWriter(pongo2.Context{"buckets": buckets}, &terraformStr)
 	if err != nil {
-		return "", err
+		panic(err)
+
 	}
 
 	formattedstring := hclwrite.Format([]byte(terraformStr.String()))
