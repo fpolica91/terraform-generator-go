@@ -18,11 +18,11 @@ func main() {
 	config.AllowMethods = []string{"GET", "POST", "OPTIONS"}
 	config.AllowHeaders = []string{"Origin", "Content-Length", "Content-Type", "Authorization", "X-User-Id"}
 	router.Use(cors.New(config))
-	router.POST("/cloudfunction", handlers.HandleCreateCloudFunction)
-	router.POST("/vms", handlers.HandleCreateVirtualMachine)
-	router.POST("/createvpcs", handlers.HandleCreateVirtualPrivateCloud)
-	router.POST("/createprovider", handlers.HandleCreateProvider)
-	router.POST("/createbuckets", handlers.HandleCreateBuckets)
+	router.POST("/compute/function", handlers.HandleCreateCloudFunction)
+	router.POST("/compute/vm", handlers.HandleCreateVirtualMachine)
+	router.POST("/compute/private_cloud", handlers.HandleCreateVirtualPrivateCloud)
+	router.POST("/provider/create", handlers.HandleCreateProvider)
+	router.POST("/storage/object", handlers.HandleCreateBuckets)
 	router.POST("/persist", handlers.HandlePersistState)
 	router.Run(":8080") // or another port of your choice
 	router.GET("/swagger/*any", gin.WrapH(httpSwagger.WrapHandler))

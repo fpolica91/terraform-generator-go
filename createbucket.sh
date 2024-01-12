@@ -1,6 +1,8 @@
 curl -d `{
   "buckets": [
     {
+      "provider": "aws",
+      "storage_type": "s3",
       "configuration": {
         "bucket": "ssssdfsgagdagadgag2estdgcssdafag",
         "tags": [
@@ -27,23 +29,7 @@ curl -d `{
             "replace_key_prefix_with": "/docs"
           }
         }]
-      },
-    "cors_configuration": {
-      "cors_rules_list": [{
-        "allowed_headers": ["*"],
-        "allowed_methods": ["GET", "PUT"],
-        "allowed_origins": ["*"],
-        "expose_headers": ["x-amz-server-side-encryption"],
-        "max_age_seconds": 3000
-      },
-      {
-        "allowed_headers": ["Authorization"],
-        "allowed_methods": ["GET"],
-        "allowed_origins": ["*"],
-        "expose_headers": ["x-amz-server-side-encryption"],
-        "max_age_seconds": 3000
-      }]
-    }
+      }
     }
   ]
 }` -X POST http://localhost:8080/createbuckets

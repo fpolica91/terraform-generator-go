@@ -1,4 +1,6 @@
 curl -d '{
+  "provider": "aws",
+  "cloud_type", "vpc",
   "vpcs": [
     {
       "configuration": 

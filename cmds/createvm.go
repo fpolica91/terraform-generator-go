@@ -9,10 +9,10 @@ import (
 	"github.com/hashicorp/hcl/v2/hclwrite"
 )
 
-func CreateVirtualMachine(vms []pkgs.VirtualMachine, provider string) (string, error) {
-	templatepath := "templates/" + provider + "/compute/vm.tpl"
+func CreateVirtualMachine(vms []pkgs.VirtualMachine, provider string, compute_type string) (string, error) {
 
-	tpl, err := pongo2.FromFile(templatepath)
+	template_path := "templates/" + provider + "/compute/" + compute_type + "/create.tpl"
+	tpl, err := pongo2.FromFile(template_path)
 
 	if err != nil {
 		return "", err

@@ -28,7 +28,9 @@ func HandleCreateBuckets(c *gin.Context) {
 	// }
 
 	var data struct {
-		Buckets []pkgs.Bucket `json:"buckets"`
+		Provider    string        `json:"provider"`
+		StorageType string        `json:"storage_type"`
+		Buckets     []pkgs.Bucket `json:"buckets"`
 	}
 
 	if err := c.ShouldBindJSON(&data); err != nil {
@@ -37,7 +39,7 @@ func HandleCreateBuckets(c *gin.Context) {
 	}
 
 	// Call the CreateBuckets function from cmds package
-	resourcesString, err := cmds.CreateBuckets(data.Buckets)
+	resourcesString, err := cmds.CreateBuckets(data.Buckets, data.Provider, data.StorageType)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}

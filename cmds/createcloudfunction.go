@@ -10,12 +10,11 @@ import (
 	"github.com/hashicorp/hcl/v2/hclwrite"
 )
 
-func CreateCloudFunction(cloudfuction []pkgs.CloudFunction, provider string) (string, error) {
-	templatepath := "templates/" + provider + "/compute/function.tpl"
-	fmt.Println(cloudfuction, "cloudfuction")
-	fmt.Println(provider, "provider")
+func CreateCloudFunction(cloudfuction []pkgs.CloudFunction, provider string, compute_type string) (string, error) {
+	template_path := "templates/" + provider + "/compute/" + compute_type + "/create.tpl"
+	fmt.Println(template_path, "the template path")
 
-	tpl, err := pongo2.FromFile(templatepath)
+	tpl, err := pongo2.FromFile(template_path)
 
 	if err != nil {
 		return "", err

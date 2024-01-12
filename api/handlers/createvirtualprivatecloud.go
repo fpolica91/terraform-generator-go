@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"generatorv/cmds"
 	"generatorv/pkgs"
 	"net/http"
@@ -11,15 +12,18 @@ import (
 func HandleCreateVirtualPrivateCloud(c *gin.Context) {
 
 	var data struct {
-		Vpcs []pkgs.VPC `json:"vpcs"`
+		Provider  string     `json:"provider"`
+		CloudType string     `json:"cloud_type"`
+		Vpcs      []pkgs.VPC `json:"vpcs"`
 	}
+	fmt.Println(data, "data")
 
 	if err := c.BindJSON(&data); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	resourceString, err := cmds.CreateVirtualPrivateCloud(data.Vpcs)
+	resourceString, err := cmds.CreateVirtualPrivateCloud(data.Vpcs, data.Provider, data.CloudType)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}

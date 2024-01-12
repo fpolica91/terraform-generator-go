@@ -10,8 +10,9 @@ import (
 
 func HandleCreateVirtualMachine(c *gin.Context) {
 	var data struct {
-		Provider string                `json:"provider"`
-		Vms      []pkgs.VirtualMachine `json:"vms"`
+		Provider    string                `json:"provider"`
+		ComputeType string                `json:"compute_type"`
+		Vms         []pkgs.VirtualMachine `json:"vms"`
 	}
 
 	if err := c.ShouldBindJSON(&data); err != nil {
@@ -19,7 +20,7 @@ func HandleCreateVirtualMachine(c *gin.Context) {
 		return
 	}
 
-	resourcesString, err := cmds.CreateVirtualMachine(data.Vms, data.Provider)
+	resourcesString, err := cmds.CreateVirtualMachine(data.Vms, data.Provider, data.ComputeType)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 	}
