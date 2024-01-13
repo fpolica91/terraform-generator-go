@@ -1,4 +1,4 @@
-{% for bucket in buckets %}
+{% for bucket in storage_objects %}
 
 {% set bucket_name = "" %}
   

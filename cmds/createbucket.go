@@ -1,6 +1,7 @@
 package cmds
 
 import (
+	"fmt"
 	"generatorv/pkgs"
 	"strings"
 
@@ -8,8 +9,10 @@ import (
 	"github.com/hashicorp/hcl/v2/hclwrite"
 )
 
-func CreateBuckets(buckets []pkgs.Bucket, provider string, storagetype string) (string, error) {
+func CreateObjectStorage(storage_objects []pkgs.ObjectStorage, provider string, storagetype string) (string, error) {
 	template_path := "templates/" + provider + "/storage/" + storagetype + "/create.tpl"
+	fmt.Println("Using template: " + template_path)
+	fmt.Println(storage_objects, "storage_objects")
 
 	tpl, err := pongo2.FromFile(template_path)
 	if err != nil {
@@ -18,7 +21,7 @@ func CreateBuckets(buckets []pkgs.Bucket, provider string, storagetype string) (
 	}
 
 	var terraformStr strings.Builder
-	err = tpl.ExecuteWriter(pongo2.Context{"buckets": buckets}, &terraformStr)
+	err = tpl.ExecuteWriter(pongo2.Context{"storage_objects": storage_objects}, &terraformStr)
 	if err != nil {
 		panic(err)
 

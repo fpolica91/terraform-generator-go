@@ -20,17 +20,11 @@ import (
 // @Failure 405 {string} string "Method Not Allowed"
 // @Failure 500 {string} string "Internal Server Error"
 // @Router /createbuckets [post]
-func HandleCreateBuckets(c *gin.Context) {
-	// userId := c.GetHeader("X-User-Id")
-	// if userId == "" {
-	// 	c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-	// 	return
-	// }
-
+func HandleObjectStorage(c *gin.Context) {
 	var data struct {
-		Provider    string        `json:"provider"`
-		StorageType string        `json:"storage_type"`
-		Buckets     []pkgs.Bucket `json:"buckets"`
+		Provider      string               `json:"provider"`
+		StorageType   string               `json:"storage_type"`
+		ObjectStorage []pkgs.ObjectStorage `json:"object_storage"`
 	}
 
 	if err := c.ShouldBindJSON(&data); err != nil {
@@ -39,7 +33,7 @@ func HandleCreateBuckets(c *gin.Context) {
 	}
 
 	// Call the CreateBuckets function from cmds package
-	resourcesString, err := cmds.CreateBuckets(data.Buckets, data.Provider, data.StorageType)
+	resourcesString, err := cmds.CreateObjectStorage(data.ObjectStorage, data.Provider, data.StorageType)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}

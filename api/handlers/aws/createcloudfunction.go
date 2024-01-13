@@ -10,9 +10,9 @@ import (
 
 func HandleCreateCloudFunction(c *gin.Context) {
 	var data struct {
-		Provider    string               `json:"provider"`
-		ComputeType string               `json:"compute_type"`
-		Lambdas     []pkgs.CloudFunction `json:"lambdas"`
+		Provider       string               `json:"provider"`
+		ComputeType    string               `json:"compute_type"`
+		CloudFunctions []pkgs.CloudFunction `json:"cloud_function"`
 	}
 
 	if err := c.BindJSON(&data); err != nil {
@@ -20,7 +20,7 @@ func HandleCreateCloudFunction(c *gin.Context) {
 		return
 	}
 	// ResourcesString
-	resourcesString, err := cmds.CreateCloudFunction(data.Lambdas, data.Provider, data.ComputeType)
+	resourcesString, err := cmds.CreateCloudFunction(data.CloudFunctions, data.Provider, data.ComputeType)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}

@@ -12,7 +12,7 @@ import (
 
 func CreateCloudFunction(cloudfuction []pkgs.CloudFunction, provider string, compute_type string) (string, error) {
 	template_path := "templates/" + provider + "/compute/" + compute_type + "/create.tpl"
-	fmt.Println(template_path, "the template path")
+	fmt.Println(cloudfuction, "cloudfuction")
 
 	tpl, err := pongo2.FromFile(template_path)
 
@@ -22,7 +22,7 @@ func CreateCloudFunction(cloudfuction []pkgs.CloudFunction, provider string, com
 
 	var resourceString strings.Builder
 
-	err = tpl.ExecuteWriter(pongo2.Context{"lambdas": cloudfuction}, &resourceString)
+	err = tpl.ExecuteWriter(pongo2.Context{"cloud_functions": cloudfuction}, &resourceString)
 	if err != nil {
 		return "", err
 	}
