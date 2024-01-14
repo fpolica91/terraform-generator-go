@@ -1,12 +1,5 @@
 {% for ec2 in compute %}
-  {%set ec2_name = ""%}
-  {% if ec2.Configuration.name %}
-    {% set ec2_name = ec2.Configuration.name %}
-    {% else %}
-    {% set ec2_name = "ec2_"|add:forloop.Counter %}
-  {% endif %}
-
-  resource "aws_instance" "{{ec2_name}}" {
+  resource "aws_instance" "{{ec2.Configuration.name}}" {
    {%- for key, value in ec2.Configuration -%}
     {%- if value -%}
       {% if key == "tags" %}
@@ -15,6 +8,9 @@
             {{ tag.key }} = "{{ tag.value }}"{% if not forloop.Last %},{% endif %}
             {%- endfor -%}
         }
+        {% elif key == "associate_public_ip_address" %}
+          associate_public_ip_address = {{ value | lower }}
+
       {% else %}
         {{ key }} = "{{ value }}"
       {% endif %}
