@@ -17,7 +17,7 @@ resource "aws_ebs_volume" "{{ volume.Configuration.name }}" {
   {% endif %}
 
   {%- if volume.Configuration.size -%}
-    size               = "{{ volume.Configuration.size }}"
+    size               = {{ volume.Configuration.size | integer }}
   {%- endif -%}
 
   {% if volume.Configuration.type %}
@@ -42,7 +42,7 @@ resource "aws_ebs_volume" "{{ volume.Configuration.name }}" {
         {{ tag.key }} = "{{ tag.value }}"
       {% endfor %}
     }
-  {%- endif -%}
+  {% endif %}
 }
   
 
