@@ -1,31 +1,26 @@
-{% for bucket in buckets %}
-
-{% set bucket_name = "" %}
-  
-{% if bucket.Configuration['bucket'] %}
-  {% set bucket_name = bucket.Configuration['bucket'] %}
-  {% else %}
-  {% set bucket_name = "bucket_"|add:forloop.Counter %}
-{% endif %}
-
-  resource "aws_s3_bucket" "{{ bucket_name }}" {
-    {%- for key, value in bucket.Configuration -%}
-      {%- if value -%}
-        {% if key == "tags" %}
-          tags = {
-              {%- for tag in value -%}
-              {{ tag.key }} = "{{ tag.value }}"{% if not forloop.Last %},{% endif %}
-              {%- endfor -%}
-          }
-        {% else %}
-          {{ key }} = "{{ value }}"
-        {% endif %}
-      {%- endif -%}
-    {%- endfor -%}
-  }
+{% for bucket in storage_objects %}
+  {% if bucket.Configuration %}
+    {% if bucket.Configuration.bucket %}
+      resource "aws_s3_bucket" "{{ bucket.Configuration.bucket }}" {
+        {%- for key, value in bucket.Configuration -%}
+          {%- if value -%}
+            {% if key == "tags" %}
+              tags = {
+                  {%- for tag in value -%}
+                  {{ tag.key }} = "{{ tag.value }}"{% if not forloop.Last %},{% endif %}
+                  {%- endfor -%}
+              }
+            {% else %}
+              {{ key }} = "{{ value }}"
+            {% endif %}
+          {%- endif -%}
+        {%- endfor -%}
+      }
+    {% endif %}
+  {%- endif -%}
 
     resource "aws_s3_bucket_ownership_controls" "ownership_controls_{{ forloop.Counter }}" {
-        bucket = aws_s3_bucket.{{bucket_name}}.id
+        bucket = aws_s3_bucket.{{bucket.Configuration.bucket}}.id
         rule {
             object_ownership = "BucketOwnerPreferred"
         }
@@ -33,7 +28,7 @@
 
     {% if bucket.PublicAccessBlock %}
         resource "aws_s3_bucket_public_access_block" "public_access_block_{{ forloop.Counter }}" {
-            bucket = aws_s3_bucket.{{bucket_name}}.id
+              bucket = aws_s3_bucket.{{bucket.Configuration.bucket}}.id
             {%- for key, value in bucket.PublicAccessBlock -%}
                 {% if key != "acl" %}
                     {{ key }} = {{ value | lower }}
@@ -42,19 +37,17 @@
         }
     {% endif %}
 
-
-
     {% if bucket.PublicAccessBlock.acl %}
         resource "aws_s3_bucket_acl" "acl_bucket_{{ forloop.Counter }}" {
             depends_on = [aws_s3_bucket_ownership_controls.ownership_controls_{{ forloop.Counter }}, aws_s3_bucket_public_access_block.public_access_block_{{ forloop.Counter }}]
-            bucket = aws_s3_bucket.{{bucket_name}}.id
+            bucket = aws_s3_bucket.{{bucket.Configuration.bucket}}.id
             acl    = "{{ bucket.PublicAccessBlock.acl }}"
         }
-    {% endif %}
+    {%- endif -%}
 
        {% if bucket.WebsiteConfiguration.host_website %}
           resource "aws_s3_bucket_website_configuration" "website_config_{{ forloop.Counter }}" {
-            bucket = aws_s3_bucket.{{bucket_name}}.id
+            bucket = aws_s3_bucket.{{bucket.Configuration.bucket}}.id
             index_document  {
               suffix = "{{ bucket.WebsiteConfiguration.index_document }}"
             }
@@ -102,27 +95,27 @@
        {%endif%}
 
   
-    {% if bucket.CorsConfiguration %}
+    {% if bucket.CorsConfiguration.cors_rules_list %}
       resource "aws_s3_bucket_cors_configuration" "bucket_{{ loop.index }}_cors" {
-        bucket = aws_s3_bucket.bucket_{{ bucket_name }}.id
+        bucket = aws_s3_bucket.bucket_{{ bucket.Configuration.bucket }}.id
         {% for rule in bucket.CorsConfiguration.cors_rules_list %}
           cors_rule {
               {% for key, value in rule %}
                 {%- if value  -%}
                   {% if key == 'max_age_seconds' %}
                    {{ key }} = {{ value  | integer}}
-                  {% elif key == 'allowed_methods' %}
+                  {% elif key == 'allowed_methods' or key == 'allowed_headers' %}
                     {{ key }} = [
                       {%- for item in value -%}
                         "{{ item }}"
                       {%- endfor -%}
                     ]
-                  {% else %}
+
+                  {%- else -%}
                     {{ key }} = "{{ value }}"
-                  {% endif %}
+                  {%- endif -%}
                 {% endif %}
               {% endfor %}
-          
           }
         {% endfor %}
       }

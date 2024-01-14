@@ -1,5 +1,5 @@
 package pkgs
 
-type CloudFunction struct {
+type Compute struct {
 	Configuration map[string]interface{} `json:"configuration"`
 }

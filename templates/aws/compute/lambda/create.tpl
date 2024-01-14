@@ -1,4 +1,4 @@
-{% for lambda in lambdas %}
+{% for lambda in compute %}
 {% set lambda_name = "" %}
   
 {% if lambda.Configuration.name %}
@@ -16,6 +16,8 @@ resource "aws_lambda_function" "{{ lambda_name }}" {
             {{ tag.key }} = "{{ tag.value }}"{% if not forloop.Last %},{% endif %}
             {%- endfor -%}
         }
+        {% elif key == "publish" %}
+          {{key}} = {{ value | lower }}
       {% else %}
         {{ key }} = "{{ value }}"
       {% endif %}

@@ -9,8 +9,10 @@ import (
 	"github.com/hashicorp/hcl/v2/hclwrite"
 )
 
-func CreateVirtualPrivateCloud(vpcs []pkgs.VPC) (string, error) {
-	tpl, err := pongo2.FromFile("templates/aws/vpc/createvpc.tpl")
+func CreateNetwork(vpcs []pkgs.NetworkUnit, provider string, cloud_type string) (string, error) {
+	template_path := "templates/" + provider + "/network/" + cloud_type + "/create.tpl"
+	fmt.Println("Using template: " + template_path)
+	tpl, err := pongo2.FromFile(template_path)
 	if err != nil {
 		return "", err
 	}

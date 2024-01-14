@@ -1,6 +1,6 @@
 package pkgs
 
-type Bucket struct {
+type ObjectStorage struct {
 	Id                   string                 `json:"id"`
 	Configuration        map[string]interface{} `json:"configuration"`
 	PublicAccessBlock    map[string]interface{} `json:"public_access_block"`
