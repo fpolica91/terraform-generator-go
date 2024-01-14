@@ -3,8 +3,7 @@
 resource "aws_sns_topic" "{{ volume.Configuration.sns_configuration.name }}" {
   name = "{{ volume.Configuration.sns_configuration.name }}"
 }
-{%- endif -%}
-
+{% endif %}
 resource "aws_glacier_vault" "{{ volume.Configuration.name }}" {
   {% if volume.name %}
     name               = "{{ volume.Configuration.name }}"
