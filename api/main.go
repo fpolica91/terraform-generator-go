@@ -22,7 +22,7 @@ func main() {
 	amazon_handler := router.Group("/api/v1/aws")
 	{
 		amazon_handler.POST("/compute/create", aws_handlers.HandleCreateCompute)
-		amazon_handler.POST("/network/create", aws_handlers.HandleCreateVirtualPrivateCloud)
+		amazon_handler.POST("/network/create", aws_handlers.HandleCreateNetwork)
 		amazon_handler.POST("/provider/create", aws_handlers.HandleCreateProvider)
 		amazon_handler.POST("/storage/create", aws_handlers.HandleObjectStorage)
 	}

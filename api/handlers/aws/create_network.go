@@ -9,12 +9,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func HandleCreateVirtualPrivateCloud(c *gin.Context) {
+func HandleCreateNetwork(c *gin.Context) {
 
 	var data struct {
-		Provider  string     `json:"provider"`
-		CloudType string     `json:"type"`
-		Vpcs      []pkgs.VPC `json:"payload"`
+		Provider    string             `json:"provider"`
+		CloudType   string             `json:"type"`
+		NetworkUnit []pkgs.NetworkUnit `json:"payload"`
 	}
 	fmt.Println(data, "data")
 
@@ -23,7 +23,7 @@ func HandleCreateVirtualPrivateCloud(c *gin.Context) {
 		return
 	}
 
-	resourceString, err := cmds.CreateVirtualPrivateCloud(data.Vpcs, data.Provider, data.CloudType)
+	resourceString, err := cmds.CreateNetwork(data.NetworkUnit, data.Provider, data.CloudType)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
