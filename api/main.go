@@ -21,11 +21,10 @@ func main() {
 
 	amazon_handler := router.Group("/api/v1/aws")
 	{
-		amazon_handler.POST("/compute/function", aws_handlers.HandleCreateCloudFunction)
-		amazon_handler.POST("/compute/virtual_machine", aws_handlers.HandleCreateVirtualMachine)
-		amazon_handler.POST("/compute/private_cloud", aws_handlers.HandleCreateVirtualPrivateCloud)
+		amazon_handler.POST("/compute/create", aws_handlers.HandleCreateCompute)
+		amazon_handler.POST("/network/create", aws_handlers.HandleCreateVirtualPrivateCloud)
 		amazon_handler.POST("/provider/create", aws_handlers.HandleCreateProvider)
-		amazon_handler.POST("/storage/object_storage", aws_handlers.HandleObjectStorage)
+		amazon_handler.POST("/storage/create", aws_handlers.HandleObjectStorage)
 	}
 
 	router.POST("/persist", handlers.HandlePersistState)

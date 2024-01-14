@@ -1,7 +1,6 @@
 package cmds
 
 import (
-	"fmt"
 	"generatorv/pkgs"
 
 	"strings"
@@ -10,9 +9,8 @@ import (
 	"github.com/hashicorp/hcl/v2/hclwrite"
 )
 
-func CreateCloudFunction(cloudfuction []pkgs.CloudFunction, provider string, compute_type string) (string, error) {
+func CreateCompute(compute []pkgs.Compute, provider string, compute_type string) (string, error) {
 	template_path := "templates/" + provider + "/compute/" + compute_type + "/create.tpl"
-	fmt.Println(cloudfuction, "cloudfuction")
 
 	tpl, err := pongo2.FromFile(template_path)
 
@@ -22,7 +20,7 @@ func CreateCloudFunction(cloudfuction []pkgs.CloudFunction, provider string, com
 
 	var resourceString strings.Builder
 
-	err = tpl.ExecuteWriter(pongo2.Context{"cloud_functions": cloudfuction}, &resourceString)
+	err = tpl.ExecuteWriter(pongo2.Context{"compute": compute}, &resourceString)
 	if err != nil {
 		return "", err
 	}

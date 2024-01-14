@@ -13,8 +13,8 @@ func HandleCreateVirtualPrivateCloud(c *gin.Context) {
 
 	var data struct {
 		Provider  string     `json:"provider"`
-		CloudType string     `json:"cloud_type"`
-		Vpcs      []pkgs.VPC `json:"vpcs"`
+		CloudType string     `json:"type"`
+		Vpcs      []pkgs.VPC `json:"payload"`
 	}
 	fmt.Println(data, "data")
 

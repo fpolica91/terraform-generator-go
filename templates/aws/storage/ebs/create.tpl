@@ -4,37 +4,37 @@
 resource "aws_ebs_volume" "{{ volume.Configuration.name }}" {
   {% if volume.name %}
     name               = "{{ volume.Configuration.name }}"
-  {% endif %}
+  {%- endif -%}
 
 
   {% if volume.Configuration.availability_zone %}
     availability_zone = "{{ volume.Configuration.availability_zone }}"
     {% if volume.Configuration.availability_zone == "all" %}
       availability_zone = "${data.aws_availability_zones.available.names}"
-    {% endif %}
-    {%else%}
+    {%- endif -%}
+    {%-else-%}
       availability_zone = "us-east-1"
   {% endif %}
 
-  {% if volume.Configuration.size %}
+  {%- if volume.Configuration.size -%}
     size               = "{{ volume.Configuration.size }}"
-  {% endif %}
+  {%- endif -%}
 
   {% if volume.Configuration.type %}
     type               = "{{ volume.Configuration.type }}"
-  {% endif %}
+  {%- endif -%}
 
   {% if volume.Configuration.encrypted %}
     encrypted          = "{{ volume.Configuration.encrypted }}"
-  {% endif %}
+  {%- endif -%}
 
   {% if volume.Configuration.kms_key_id %}
     kms_key_id         = "{{ volume.Configuration.kms_key_id }}"
-  {% endif %}
+  {%- endif -%}
 
   {% if volume.Configuration.snapshot_id %}
     snapshot_id        = "{{ volume.Configuration.snapshot_id }}"
-  {% endif %}
+  {%- endif -%}
 
   {% if volume.Configuration.tags %}
     tags = {
@@ -42,7 +42,7 @@ resource "aws_ebs_volume" "{{ volume.Configuration.name }}" {
         {{ tag.key }} = "{{ tag.value }}"
       {% endfor %}
     }
-  {% endif %}
+  {%- endif -%}
 }
   
 

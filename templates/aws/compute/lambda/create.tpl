@@ -1,4 +1,4 @@
-{% for lambda in cloud_functions %}
+{% for lambda in compute %}
 {% set lambda_name = "" %}
   
 {% if lambda.Configuration.name %}

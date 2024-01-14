@@ -8,23 +8,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// HandleCreateBuckets godoc
-// @Summary Create S3 buckets
-// @Description Create buckets based on the provided configuration
-// @Tags buckets
-// @Accept json
-// @Produce json
-// @Param buckets body []pkgs.Bucket true "Array of Bucket Configurations"
-// @Success 200 {string} string "Buckets created successfully"
-// @Failure 400 {string} string "Bad Request"
-// @Failure 405 {string} string "Method Not Allowed"
-// @Failure 500 {string} string "Internal Server Error"
-// @Router /createbuckets [post]
 func HandleObjectStorage(c *gin.Context) {
 	var data struct {
 		Provider      string               `json:"provider"`
-		StorageType   string               `json:"storage_type"`
-		ObjectStorage []pkgs.ObjectStorage `json:"object_storage"`
+		StorageType   string               `json:"type"`
+		ObjectStorage []pkgs.ObjectStorage `json:"payload"`
 	}
 
 	if err := c.ShouldBindJSON(&data); err != nil {

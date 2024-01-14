@@ -11,8 +11,8 @@ import (
 func HandleCreateVirtualMachine(c *gin.Context) {
 	var data struct {
 		Provider    string                `json:"provider"`
-		ComputeType string                `json:"compute_type"`
-		Vms         []pkgs.VirtualMachine `json:"vms"`
+		ComputeType string                `json:"type"`
+		Vms         []pkgs.VirtualMachine `json:"payload"`
 	}
 
 	if err := c.ShouldBindJSON(&data); err != nil {

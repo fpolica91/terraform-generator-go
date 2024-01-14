@@ -1,4 +1,4 @@
-{% for ec2 in vms %}
+{% for ec2 in compute %}
   {%set ec2_name = ""%}
   {% if ec2.Configuration.name %}
     {% set ec2_name = ec2.Configuration.name %}
