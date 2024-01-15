@@ -1,10 +1,13 @@
 {% for bucket in storage_objects %}
   {% if bucket.Configuration %}
-    {% if bucket.Configuration.bucket %}
-      resource "aws_s3_bucket" "{{ bucket.Configuration.bucket }}" {
+    {% if bucket.Configuration.name %}
+      resource "aws_s3_bucket" "{{ bucket.Configuration.name }}" {
         {%- for key, value in bucket.Configuration -%}
           {%- if value -%}
-            {% if key == "tags" %}
+            {% if key == "name" %}
+              bucket = "{{ value }}"
+
+            {% elif key == "tags" %}
               tags = {
                   {%- for tag in value -%}
                   {{ tag.key }} = "{{ tag.value }}"{% if not forloop.Last %},{% endif %}
@@ -20,7 +23,7 @@
   {%- endif -%}
 
     resource "aws_s3_bucket_ownership_controls" "ownership_controls_{{ forloop.Counter }}" {
-        bucket = aws_s3_bucket.{{bucket.Configuration.bucket}}.id
+        bucket = aws_s3_bucket.{{bucket.Configuration.name}}.id
         rule {
             object_ownership = "BucketOwnerPreferred"
         }
@@ -28,7 +31,7 @@
 
     {% if bucket.PublicAccessBlock %}
         resource "aws_s3_bucket_public_access_block" "public_access_block_{{ forloop.Counter }}" {
-              bucket = aws_s3_bucket.{{bucket.Configuration.bucket}}.id
+              bucket = aws_s3_bucket.{{bucket.Configuration.name}}.id
             {%- for key, value in bucket.PublicAccessBlock -%}
                 {% if key != "acl" %}
                     {{ key }} = {{ value | lower }}
@@ -40,14 +43,14 @@
     {% if bucket.PublicAccessBlock.acl %}
         resource "aws_s3_bucket_acl" "acl_bucket_{{ forloop.Counter }}" {
             depends_on = [aws_s3_bucket_ownership_controls.ownership_controls_{{ forloop.Counter }}, aws_s3_bucket_public_access_block.public_access_block_{{ forloop.Counter }}]
-            bucket = aws_s3_bucket.{{bucket.Configuration.bucket}}.id
+            bucket = aws_s3_bucket.{{bucket.Configuration.name}}.id
             acl    = "{{ bucket.PublicAccessBlock.acl }}"
         }
     {%- endif -%}
 
        {% if bucket.WebsiteConfiguration.host_website %}
           resource "aws_s3_bucket_website_configuration" "website_config_{{ forloop.Counter }}" {
-            bucket = aws_s3_bucket.{{bucket.Configuration.bucket}}.id
+            bucket = aws_s3_bucket.{{bucket.Configuration.name}}.id
             index_document  {
               suffix = "{{ bucket.WebsiteConfiguration.index_document }}"
             }
@@ -97,7 +100,7 @@
   
     {% if bucket.CorsConfiguration.cors_rules_list %}
       resource "aws_s3_bucket_cors_configuration" "bucket_{{ loop.index }}_cors" {
-        bucket = aws_s3_bucket.bucket_{{ bucket.Configuration.bucket }}.id
+        bucket = aws_s3_bucket.bucket_{{ bucket.Configuration.name }}.id
         {% for rule in bucket.CorsConfiguration.cors_rules_list %}
           cors_rule {
               {% for key, value in rule %}
@@ -110,7 +113,12 @@
                         "{{ item }}"
                       {%- endfor -%}
                     ]
-
+                  {% elif key == 'allowed_origins' %}
+                    {{ key }} = [
+                      {%- for item in value -%}
+                        "{{ item.origin }}"
+                      {%- endfor -%}
+                    ]
                   {%- else -%}
                     {{ key }} = "{{ value }}"
                   {%- endif -%}
