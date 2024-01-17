@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"generatorv/cmds"
 	"generatorv/pkgs"
 	"net/http"
@@ -16,7 +15,6 @@ func HandleCreateNetwork(c *gin.Context) {
 		CloudType   string             `json:"type"`
 		NetworkUnit []pkgs.NetworkUnit `json:"payload"`
 	}
-	fmt.Println(data, "data")
 
 	if err := c.BindJSON(&data); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

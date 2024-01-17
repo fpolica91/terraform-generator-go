@@ -12,6 +12,7 @@ import (
 func CreateNetwork(vpcs []pkgs.NetworkUnit, provider string, cloud_type string) (string, error) {
 	template_path := "templates/" + provider + "/network/" + cloud_type + "/create.tpl"
 	fmt.Println("Using template: " + template_path)
+	fmt.Println(vpcs, "the vpcs")
 	tpl, err := pongo2.FromFile(template_path)
 	if err != nil {
 		return "", err
@@ -20,7 +21,7 @@ func CreateNetwork(vpcs []pkgs.NetworkUnit, provider string, cloud_type string) 
 	fmt.Println("Writing to file: terraform/vpc.tf")
 	var resourcesString strings.Builder
 
-	err = tpl.ExecuteWriter(pongo2.Context{"vpcs": vpcs}, &resourcesString)
+	err = tpl.ExecuteWriter(pongo2.Context{"network_units": vpcs}, &resourcesString)
 	if err != nil {
 		return "", err
 	}
