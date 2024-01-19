@@ -1,5 +1,5 @@
 {% for gateway in network_units %}
-  {% if gateway.type ==  "NAT" %}
+  {% if gateway.type ==  "nat_gateway" %}
   resource "aws_nat_gateway" "{{ gateway.Configuration.name }}" {
       subnet_id     = aws_subnet.{{gateway.Configuration.subnet_name}}.id
       depends_on = [aws_internet_gateway.{{gateway.Configuration.public_gateway_name}}]
