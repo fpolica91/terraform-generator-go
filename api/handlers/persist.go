@@ -3,7 +3,8 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
-	"generatorv/api/database"
+
+	// "generatorv/api/database"
 
 	"github.com/gin-gonic/gin"
 )
@@ -25,5 +26,5 @@ func HandlePersistState(c *gin.Context) {
 		fmt.Println(err)
 	}
 
-	database.Set(userId, state)
+	// database.Set(userId, state)
 }
