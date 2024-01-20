@@ -27,12 +27,17 @@ func main() {
 		amazon_handler.POST("/provider/create", aws_handlers.HandleCreateProvider)
 		amazon_handler.POST("/storage/create", aws_handlers.HandleObjectStorage)
 	}
+	router.GET("/health", func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "ok",
+		})
+	})
 	port := os.Getenv("PORT")
 	fmt.Println(port)
 	if port == "" {
 		port = "8080" // default port to use if PORT isn't set
 	}
-	// router.POST("/persist", handlers.HandlePersistState)
+
 	router.Run(":" + port) // or another port of your choice
 	router.GET("/swagger/*any", gin.WrapH(httpSwagger.WrapHandler))
 
