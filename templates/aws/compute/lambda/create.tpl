@@ -24,5 +24,4 @@ resource "aws_lambda_function" "{{ lambda_name }}" {
     {%- endif -%}
   {%- endfor -%}
 }
-
 {% endfor %}

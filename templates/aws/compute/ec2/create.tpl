@@ -10,7 +10,6 @@
         }
         {% elif key == "associate_public_ip_address" %}
           associate_public_ip_address = {{ value | lower }}
-
       {% else %}
         {{ key }} = "{{ value }}"
       {% endif %}
