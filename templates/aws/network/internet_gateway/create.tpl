@@ -14,7 +14,7 @@
       {% endfor %}
     }
   {%- else -%}
-   resource "aws_internet_gateway" "{{ gateway.Cofiguration.name }}" {
+   resource "aws_internet_gateway" "{{ gateway.Configuration.name }}" {
       vpc_id = aws_vpc.{{gateway.Configuration.vpc_name}}.id
         {%- for key, value in gateway.Configuration -%}
           {% if value and key != "name" and key != "type" and key != "vpc_name"  and key != "name"%}
@@ -28,7 +28,7 @@
               {{ key }} = "{{ value }}"
             {% endif %}
           {% endif %}
-        {%-endfor-%}
+        {% endfor %}
        }
-  {% endif %}
-{% endfor %}
+  {%- endif -%}
+{%- endfor -%}
